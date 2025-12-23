@@ -3,7 +3,29 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const FeedbackTemplate = require('../models/FeedbackTemplate');
 
-// ✅ GET ALL templates
+/**
+ * ✅ CREATE TEMPLATE (POST)
+ */
+router.post('/', async (req, res) => {
+  try {
+    const { title, questions } = req.body;
+
+    if (!title || !questions || questions.length === 0) {
+      return res.status(400).json({ message: 'Title and questions are required' });
+    }
+
+    const newTemplate = new FeedbackTemplate({ title, questions });
+    const savedTemplate = await newTemplate.save();
+
+    res.status(201).json(savedTemplate);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * ✅ GET ALL TEMPLATES
+ */
 router.get('/', async (req, res) => {
   try {
     const templates = await FeedbackTemplate.find();
@@ -13,7 +35,9 @@ router.get('/', async (req, res) => {
   }
 });
 
-// ✅ GET template by ID
+/**
+ * ✅ GET TEMPLATE BY ID
+ */
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
 
